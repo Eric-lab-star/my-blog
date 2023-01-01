@@ -1,11 +1,8 @@
+import { GetStaticProps } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
-import styles from "../styles/Home.module.css";
-
-const inter = Inter({ subsets: ["latin"] });
-
-export default function Home() {
+import prisma from "../lib/prisma";
+import { Post } from "@prisma/client";
+export default function Home({ post }: { post: Post }) {
   return (
     <>
       <Head>
@@ -15,6 +12,23 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>hello</main>
+      <div>{post.title}</div>
+      <div>{post.content}</div>
+      <div>{post.createdAt + ""}</div>
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: 1,
+    },
+  });
+
+  return {
+    props: {
+      post: JSON.parse(JSON.stringify(post)),
+    },
+  };
+};
